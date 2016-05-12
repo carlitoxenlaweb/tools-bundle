@@ -1,0 +1,12 @@
+services:
+    tecnocreaciones_tools.service.intro:
+        class: Tecnocreaciones\Bundle\ToolsBundle\Service\Intro\IntroService
+        calls:
+            - [ setConfig, ["%tecnocreaciones_tools.intro.config%"]]
+            - [ setTemplating, [@templating]]
+            - [ setDoctrine, [@doctrine]]
+            - [ setSecurityContext, [@security.context]]
+    tecnocreaciones_tools.twig.stringloader:
+        class: Twig_Loader_String
+        tags:
+            - { name: twig.loader }

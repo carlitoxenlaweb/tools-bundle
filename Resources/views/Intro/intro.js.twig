@@ -1,0 +1,45 @@
+<script type="text/javascript">
+    $(document).ready(function(){
+        {% for intro in intros %}
+            {% set nameIntro = 'intro_' ~ intro.id %}
+            function {{ nameIntro }}(){
+                var intro = introJs();
+                  intro.setOptions({
+                    skipLabel: '{{ 'intro.options.skip_label'|trans }}',
+                    nextLabel: '{{ 'intro.options.next_label'|trans|raw }}',
+                    prevLabel: '{{ 'intro.options.prev_label'|trans|raw }}',
+                    doneLabel: '{{ 'intro.options.done_label'|trans }}',
+
+                    steps: [
+                        {% for step in intro.steps %}
+                          {% if step.contentCallback != "" %}
+                              {% set content = intro_service.renderView(step.contentCallback) %}  
+                          {% else %}
+                              {% set content = step.content|trans({},intro.translationDomain)|raw %}  
+                          {% endif %}
+                              
+                          {
+                            {% if step.element != "" %}
+                                element: '{{ step.element|raw }}',
+                            {% endif %}
+                            intro: '{{ content|raw }}',
+                            position: '{{ step.position }}'
+                          },
+                        {% endfor %}
+                    ]
+                  });
+                  intro.oncomplete(function() {
+                    $.ajax("{{ path('tools_bundle_intro',{intro: intro.id,type_log: constant('Tecnocreaciones\\Bundle\\ToolsBundle\\Model\\Intro\\IntroLogInterface::TYPE_LOG_FINISH')}) }}");
+                  });
+                  intro.onexit(function() {
+                    $.ajax("{{ path('tools_bundle_intro',{intro: intro.id,type_log: constant('Tecnocreaciones\\Bundle\\ToolsBundle\\Model\\Intro\\IntroLogInterface::TYPE_LOG_CANCEL')}) }}");
+                  });
+                  return intro;
+          }
+          {% if intro.autoStart == true %}
+                {{ nameIntro }}().start();
+          {% endif %}
+          
+        {% endfor %}
+    });
+</script>
