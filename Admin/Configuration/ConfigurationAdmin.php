@@ -62,6 +62,7 @@ class ConfigurationAdmin extends Admin implements \Symfony\Component\DependencyI
             ))
             ->add('group',null,array(
                 'disabled' => true,
+                'em' => $this->modelManager->getEntityManagerName()
             ))
             ->add('active')
         ;
